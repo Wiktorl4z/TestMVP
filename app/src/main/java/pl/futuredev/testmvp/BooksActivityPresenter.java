@@ -2,6 +2,8 @@ package pl.futuredev.testmvp;
 
 import java.util.List;
 
+import pl.futuredev.testmvp.repositories.BooksRepository;
+
 public class BooksActivityPresenter {
 
     private BooksActivityView view;
@@ -15,10 +17,10 @@ public class BooksActivityPresenter {
     public void loadBooks() {
         List<Book> books = repository.getBooks();
 
-        if (!books.isEmpty()) {
-            view.displayBooks(books);
-        } else {
+        if (books.isEmpty()) {
             view.displayNoBooks();
+        } else {
+            view.displayBooks(books);
         }
     }
 }

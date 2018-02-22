@@ -1,4 +1,10 @@
 package pl.futuredev.testmvp;
 
-class Book {
+public class Book {
+
+    private int ID;
+
+    public Book(int ID) {
+        this.ID = ID;
+    }
 }

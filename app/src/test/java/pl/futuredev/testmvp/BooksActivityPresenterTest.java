@@ -1,88 +1,56 @@
 package pl.futuredev.testmvp;
 
-import junit.framework.Assert;
-
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import pl.futuredev.testmvp.repositories.BooksRepository;
 
+import static java.util.Collections.EMPTY_LIST;
+
+
+@RunWith(MockitoJUnitRunner.class)
 public class BooksActivityPresenterTest {
 
-    @Test
-    public void shouldWork() {
-        assertEquals(1, 1);
-    }
 
+    @Mock
+    BooksRepository repository;
+
+    @Mock
+    BooksActivityView view;
+    BooksActivityPresenter presenter;
+    private final List<Book> MANY_BOOKS = Arrays.asList(new Book(1), new Book(2), new Book(3));
+
+    @Before
+    public void setUp() {
+        presenter = new BooksActivityPresenter(view, repository);
+    }
 
     @Test
     public void shouldPassBooksToView() {
 
-        // given
-        BooksActivityView view = new MockView();
-        BooksRepository repository = new MockBooksRepository(true);
+        Mockito.when(repository.getBooks()).thenReturn(MANY_BOOKS);
 
-        // when
-        BooksActivityPresenter presenter = new BooksActivityPresenter(view, repository);
         presenter.loadBooks();
 
-        // then
-        Assert.assertEquals(true, ((MockView) view).passed);
-
+        Mockito.verify(view).displayBooks(MANY_BOOKS);
     }
 
     @Test
     public void shouldNoPassBooksToView() {
 
-        // given
-        BooksActivityView view = new MockView();
-        BooksRepository repository = new MockBooksRepository(false);
+        Mockito.when(repository.getBooks()).thenReturn(Collections.EMPTY_LIST);
 
-        // when
-        BooksActivityPresenter presenter = new BooksActivityPresenter(view, repository);
         presenter.loadBooks();
 
-        // then
-        Assert.assertEquals(true, ((MockView) view).notPassed);
-
-    }
-
-    private class MockView implements BooksActivityView {
-
-        boolean passed;
-        boolean notPassed;
-
-        @Override
-        public void displayBooks(List<Book> books) {
-            passed = true;
-        }
-
-        @Override
-        public void displayNoBooks() {
-            notPassed = true;
-        }
-    }
-
-    private class MockBooksRepository implements BooksRepository {
-
-        private boolean passed;
-
-        public MockBooksRepository(boolean passed) {
-            this.passed = passed;
-        }
-
-        @Override
-        public List<Book> getBooks() {
-
-            if (passed) {
-                return Arrays.asList(new Book(), new Book(), new Book());
-            } else {
-                return Collections.emptyList();
-            }
-        }
+        Mockito.verify(view).displayNoBooks();
     }
 }
